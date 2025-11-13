@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Progress Tracker</title>
+    <style>
+        /* --- Google Font Import --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        /* --- Basic Styling & Theme --- */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a1a2e; /* Dark, rich background */
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* --- Main Container Card --- */
+        .container {
+            text-align: center;
+            background-color: #16213e;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 380px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #b8c1ec;
+        }
+
+        /* --- Progress Ring Container --- */
+        .progress-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg); /* Start from the top */
+        }
+
+        .progress-ring-circle {
+            fill: none;
+            stroke-width: 20;
+            stroke-linecap: round;
+        }
+
+        /* --- Styling for the two parts of the ring --- */
+        .progress-ring-remaining {
+            /* The base layer, representing 100% remaining */
+            stroke: #8e44ad; /* A muted magenta/purple */
+            opacity: 0.8;
+        }
+
+        .progress-ring-elapsed {
+            /* The top layer, representing the progress */
+            stroke: url(#gradient-elapsed);
+            filter: url(#glow);
+            transition: stroke-dashoffset 0.5s ease-in-out;
+        }
+
+        /* --- Text Styling --- */
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .elapsed-percent {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #00d2ff; /* Cyan, matching the gradient */
+            display: block;
+            line-height: 1;
+        }
+
+        .remaining-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #e74c3c; /* Red, matching the remaining ring */
+            margin-top: 5px;
+        }
+
+        .time-left {
+            margin-top: 25px;
+            font-size: 1.1rem;
+            color: #95a5a6;
+            font-weight: 400;
+        }
+
+        .time-left span {
+            font-weight: 600;
+            color: #f39c12; /* A warmer highlight color */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Day Progress (9.00 AM - 7.00 PM)</h1>
+        
+        <div class="progress-container">
+            <svg class="progress-ring" width="280" height="280" viewBox="0 0 280 280">
+                <!-- Definitions for visual effects -->
+                <defs>
+                    <linearGradient id="gradient-elapsed" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00d2ff" />
+                        <stop offset="100%" stop-color="#3a7bd5" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- 
+                    The "Remaining" Circle.
+                    This is the base layer. It's always a full circle.
+                -->
+                <circle class="progress-ring-circle progress-ring-remaining" cx="140" cy="140" r="120" />
+                
+                <!-- 
+                    The "Elapsed" Circle.
+                    This is the top layer. Its stroke-dashoffset is animated
+                    to cover the "Remaining" circle below it.
+                -->
+                <circle
+                    class="progress-ring-circle progress-ring-elapsed"
+                    cx="140"
+                    cy="140"
+                    r="120"
+                />
+            </svg>
+            
+            <div class="progress-text">
+                <span class="elapsed-percent">0%</span>
+                <div class="remaining-label">100% Remaining</div>
+            </div>
+        </div>
+
+        <div class="time-left">
+            Time Remaining: <span id="time-left">--:--:--</span>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const START_HOUR = 9.00;  // 9.00 AM
+        const END_HOUR = 19.00;   // 6.30 PM (21:00 in 24-hour format)
+
+        // --- DOM Elements ---
+        const elapsedText = document.querySelector('.elapsed-percent');
+        const remainingLabel = document.querySelector('.remaining-label');
+        const timeLeftSpan = document.getElementById('time-left');
+        const progressCircle = document.querySelector('.progress-ring-elapsed');
+        
+        // --- SVG Math ---
+        const radius = progressCircle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+
+        // Set the SVG circle's properties for the animation
+        progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressCircle.style.strokeDashoffset = circumference;
+
+        /**
+         * Sets the progress of the circular graph and updates the text.
+         * @param {number} percent - The percentage to set (0 to 100).
+         */
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+            
+            const elapsedPercent = Math.round(percent);
+            const remainingPercent = Math.round(100 - percent);
+
+            elapsedText.textContent = `${elapsedPercent}%`;
+            remainingLabel.textContent = `${remainingPercent}% Remaining`;
+        }
+
+        /**
+         * Formats milliseconds into a HH:MM:SS string.
+         * @param {number} ms - Milliseconds to format.
+         * @returns {string} Formatted time string.
+         */
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        /**
+         * Main function to update the graph in real-time.
+         */
+        function updateGraph() {
+            const now = new Date();
+            const currentMs = now.getHours() * 3600000 + now.getMinutes() * 60000 + now.getSeconds() * 1000;
+            
+            const startMs = START_HOUR * 3600000;
+            const endMs = END_HOUR * 3600000;
+            const totalMs = endMs - startMs;
+
+            let percent;
+            let timeLeftMs;
+
+            if (currentMs < startMs) {
+                // Before the start time
+                percent = 0;
+                timeLeftMs = endMs - startMs;
+            } else if (currentMs > endMs) {
+                // After the end time
+                percent = 100;
+                timeLeftMs = 0;
+            } else {
+                // During the time window
+                const elapsedMs = currentMs - startMs;
+                percent = (elapsedMs / totalMs) * 100;
+                timeLeftMs = endMs - currentMs;
+            }
+            
+            setProgress(percent);
+            timeLeftSpan.textContent = formatTime(timeLeftMs);
+        }
+
+        // --- Initial Call and Interval ---
+        updateGraph(); // Run immediately on load
+        setInterval(updateGraph, 1000); // Update every second
+    </script>
+
+</body>
+</html>
