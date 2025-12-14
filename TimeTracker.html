@@ -3,251 +3,672 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Day Progress Tracker</title>
+    <title>Day Progress Plus</title>
     <style>
-        /* --- Google Font Import --- */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=outfit:wght@300;400;600;700&display=swap');
 
-        /* --- Basic Styling & Theme --- */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.5);
+            --secondary: #a855f7;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #1a1a2e; /* Dark, rich background */
-            color: #f5f5f5;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 20%);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            overflow-y: auto; /* Allow scrolling for tasks if needed */
         }
 
-        /* --- Main Container Card --- */
-        .container {
-            text-align: center;
-            background-color: #16213e;
-            padding: 40px;
+        /* --- Main Layout --- */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 90%;
+            max-width: 450px;
+            margin: 20px;
+        }
+
+        /* --- Glass Card Style --- */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
             border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2);
-            width: 380px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- Header & Settings --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         h1 {
+            font-size: 1.25rem;
             font-weight: 600;
-            font-size: 1.5rem;
-            margin-top: 0;
-            margin-bottom: 30px;
-            color: #b8c1ec;
+            margin: 0;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* --- Progress Ring Container --- */
-        .progress-container {
+        .settings-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            padding: 5px;
+        }
+
+        .settings-btn:hover {
+            color: var(--primary);
+            transform: rotate(45deg);
+        }
+
+        /* --- Progress Ring --- */
+        .progress-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             position: relative;
-            width: 280px;
-            height: 280px;
-            margin: 0 auto;
+            padding: 10px 0 30px 0;
         }
 
         .progress-ring {
-            transform: rotate(-90deg); /* Start from the top */
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 0 10px var(--primary-glow));
         }
 
         .progress-ring-circle {
             fill: none;
-            stroke-width: 20;
+            stroke-width: 12;
             stroke-linecap: round;
         }
 
-        /* --- Styling for the two parts of the ring --- */
-        .progress-ring-remaining {
-            /* The base layer, representing 100% remaining */
-            stroke: #8e44ad; /* A muted magenta/purple */
-            opacity: 0.8;
+        .progress-bg {
+            stroke: rgba(255, 255, 255, 0.05);
         }
 
-        .progress-ring-elapsed {
-            /* The top layer, representing the progress */
-            stroke: url(#gradient-elapsed);
-            filter: url(#glow);
-            transition: stroke-dashoffset 0.5s ease-in-out;
+        .progress-value {
+            stroke: url(#gradient-primary);
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* --- Text Styling --- */
-        .progress-text {
+        .progress-info {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%); /* Adjusted slightly up */
+            text-align: center;
+        }
+
+        .percent-text {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .time-display {
+            margin-top: -10px;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            background: rgba(255,255,255,0.05);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* --- Task List --- */
+        .task-section {
+            margin-top: 10px;
+        }
+
+        .task-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .task-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .task-input:focus {
+            border-color: var(--primary);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            width: 44px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .add-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .add-btn:active {
+            transform: scale(0.95);
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--card-border) transparent;
+        }
+
+        .task-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s, transform 0.2s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideOut {
+            to { opacity: 0; transform: translateX(20px); }
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+        
+        .task-item.completed {
+            opacity: 0.6;
+        }
+        
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .checkbox:hover {
+            border-color: var(--primary);
+        }
+
+        .task-item.completed .checkbox {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .task-item.completed .checkbox::after {
+            content: '✓';
+            color: white;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .elapsed-percent {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: #00d2ff; /* Cyan, matching the gradient */
+        .task-text {
+            flex: 1;
+            font-size: 0.95rem;
+            word-break: break-word;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+            padding: 4px;
+        }
+
+        .task-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger);
+        }
+
+        /* --- Settings Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 350px;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
             display: block;
-            line-height: 1;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
-        .remaining-label {
-            font-size: 1rem;
-            font-weight: 500;
-            color: #e74c3c; /* Red, matching the remaining ring */
-            margin-top: 5px;
+        .form-control {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--card-border);
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--text-main);
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
-        .time-left {
-            margin-top: 25px;
-            font-size: 1.1rem;
-            color: #95a5a6;
-            font-weight: 400;
-        }
-
-        .time-left span {
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
             font-weight: 600;
-            color: #f39c12; /* A warmer highlight color */
+            cursor: pointer;
+            transition: background 0.2s;
         }
+
+        .save-btn:hover {
+            background: #0ea5e9;
+        }
+
+        /* Util helpers */
+        .hidden { display: none; }
 
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Day Progress (8 AM - 9 PM)</h1>
-        
-        <div class="progress-container">
-            <svg class="progress-ring" width="280" height="280" viewBox="0 0 280 280">
-                <!-- Definitions for visual effects -->
-                <defs>
-                    <linearGradient id="gradient-elapsed" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00d2ff" />
-                        <stop offset="100%" stop-color="#3a7bd5" />
-                    </linearGradient>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                        <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                    </filter>
-                </defs>
+    <div class="app-container">
+        <!-- Progress Card -->
+        <div class="glass-card">
+            <div class="header">
+                <h1>Day Progress</h1>
+                <button class="settings-btn" id="openSettings" title="Settings">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </button>
+            </div>
 
-                <!-- 
-                    The "Remaining" Circle.
-                    This is the base layer. It's always a full circle.
-                -->
-                <circle class="progress-ring-circle progress-ring-remaining" cx="140" cy="140" r="120" />
+            <div class="progress-section">
+                <svg class="progress-ring" width="220" height="220" viewBox="0 0 220 220">
+                    <defs>
+                        <linearGradient id="gradient-primary" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#38bdf8" />
+                            <stop offset="100%" stop-color="#a855f7" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="progress-ring-circle progress-bg" cx="110" cy="110" r="90" />
+                    <circle class="progress-ring-circle progress-value" cx="110" cy="110" r="90" />
+                </svg>
                 
-                <!-- 
-                    The "Elapsed" Circle.
-                    This is the top layer. Its stroke-dashoffset is animated
-                    to cover the "Remaining" circle below it.
-                -->
-                <circle
-                    class="progress-ring-circle progress-ring-elapsed"
-                    cx="140"
-                    cy="140"
-                    r="120"
-                />
-            </svg>
-            
-            <div class="progress-text">
-                <span class="elapsed-percent">0%</span>
-                <div class="remaining-label">100% Remaining</div>
+                <div class="progress-info">
+                    <span class="percent-text" id="percentDisplay">0%</span>
+                    <span class="status-text" id="statusDisplay">Remaining</span>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="time-display" id="timeLeftDisplay">--:--:--</div>
+                <div style="margin-top: 8px; font-size: 0.8rem; color: var(--text-muted);">
+                    <span id="rangeDisplay">09:00 - 18:00</span>
+                </div>
             </div>
         </div>
 
-        <div class="time-left">
-            Time Remaining: <span id="time-left">--:--:--</span>
+        <!-- Task List Card -->
+        <div class="glass-card task-section">
+            <div class="header" style="margin-bottom: 15px;">
+                <h1>Focus Tasks</h1>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="taskCount">0/0</span>
+            </div>
+            
+            <div class="task-input-group">
+                <input type="text" class="task-input" id="taskInput" placeholder="What needs to be done?">
+                <button class="add-btn" id="addTaskBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </button>
+            </div>
+
+            <ul class="task-list" id="taskList">
+                <!-- Tasks will be injected here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="settings-btn" id="closeSettings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="form-group">
+                <label for="startHour">Start Time (Hour)</label>
+                <select id="startHour" class="form-control">
+                    <!-- 0-23 generated by JS -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="endHour">End Time (Hour)</label>
+                <select id="endHour" class="form-control">
+                     <!-- 0-23 generated by JS -->
+                </select>
+            </div>
+            <button class="save-btn" id="saveSettings">Save Changes</button>
         </div>
     </div>
 
     <script>
-        // --- Configuration ---
-        const START_HOUR = 8;  // 8 AM
-        const END_HOUR = 21;   // 9 PM (21:00 in 24-hour format)
+        // --- State Management ---
+        const state = {
+            startHour: parseInt(localStorage.getItem('startHour')) || 9,
+            endHour: parseInt(localStorage.getItem('endHour')) || 18,
+            tasks: JSON.parse(localStorage.getItem('tasks')) || []
+        };
 
         // --- DOM Elements ---
-        const elapsedText = document.querySelector('.elapsed-percent');
-        const remainingLabel = document.querySelector('.remaining-label');
-        const timeLeftSpan = document.getElementById('time-left');
-        const progressCircle = document.querySelector('.progress-ring-elapsed');
-        
-        // --- SVG Math ---
-        const radius = progressCircle.r.baseVal.value;
+        const els = {
+            percent: document.getElementById('percentDisplay'),
+            status: document.getElementById('statusDisplay'),
+            timeLeft: document.getElementById('timeLeftDisplay'),
+            range: document.getElementById('rangeDisplay'),
+            circle: document.querySelector('.progress-value'),
+            modal: document.getElementById('settingsModal'),
+            startInput: document.getElementById('startHour'),
+            endInput: document.getElementById('endHour'),
+            taskList: document.getElementById('taskList'),
+            taskInput: document.getElementById('taskInput'),
+            taskCount: document.getElementById('taskCount'),
+        };
+
+        // --- Progress Logic ---
+        const radius = els.circle.r.baseVal.value;
         const circumference = radius * 2 * Math.PI;
+        
+        els.circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        els.circle.style.strokeDashoffset = circumference;
 
-        // Set the SVG circle's properties for the animation
-        progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-        progressCircle.style.strokeDashoffset = circumference;
-
-        /**
-         * Sets the progress of the circular graph and updates the text.
-         * @param {number} percent - The percentage to set (0 to 100).
-         */
-        function setProgress(percent) {
-            const offset = circumference - (percent / 100) * circumference;
-            progressCircle.style.strokeDashoffset = offset;
-            
-            const elapsedPercent = Math.round(percent);
-            const remainingPercent = Math.round(100 - percent);
-
-            elapsedText.textContent = `${elapsedPercent}%`;
-            remainingLabel.textContent = `${remainingPercent}% Remaining`;
-        }
-
-        /**
-         * Formats milliseconds into a HH:MM:SS string.
-         * @param {number} ms - Milliseconds to format.
-         * @returns {string} Formatted time string.
-         */
-        function formatTime(ms) {
-            const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-
-            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-
-        /**
-         * Main function to update the graph in real-time.
-         */
-        function updateGraph() {
+        function updateProgress() {
             const now = new Date();
             const currentMs = now.getHours() * 3600000 + now.getMinutes() * 60000 + now.getSeconds() * 1000;
-            
-            const startMs = START_HOUR * 3600000;
-            const endMs = END_HOUR * 3600000;
+            const startMs = state.startHour * 3600000;
+            const endMs = state.endHour * 3600000;
             const totalMs = endMs - startMs;
 
-            let percent;
-            let timeLeftMs;
+            let percent = 0;
+            let remainingMs = 0;
 
             if (currentMs < startMs) {
-                // Before the start time
                 percent = 0;
-                timeLeftMs = endMs - startMs;
+                remainingMs = endMs - startMs; // Or maybe show full time?
+                els.status.textContent = "Not Started";
             } else if (currentMs > endMs) {
-                // After the end time
                 percent = 100;
-                timeLeftMs = 0;
+                remainingMs = 0;
+                els.status.textContent = "Completed";
             } else {
-                // During the time window
-                const elapsedMs = currentMs - startMs;
-                percent = (elapsedMs / totalMs) * 100;
-                timeLeftMs = endMs - currentMs;
+                const elapsed = currentMs - startMs;
+                percent = (elapsed / totalMs) * 100;
+                remainingMs = endMs - currentMs;
+                els.status.textContent = "Remaining";
             }
+
+            // Update UI
+            const offset = circumference - (percent / 100) * circumference;
+            els.circle.style.strokeDashoffset = offset;
+            els.percent.textContent = Math.round(percent) + '%';
             
-            setProgress(percent);
-            timeLeftSpan.textContent = formatTime(timeLeftMs);
+            // Format Time Remaining
+            const h = Math.floor(remainingMs / 3600000);
+            const m = Math.floor((remainingMs % 3600000) / 60000);
+            const s = Math.floor((remainingMs % 60000) / 1000);
+            els.timeLeft.textContent = 
+                `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
 
-        // --- Initial Call and Interval ---
-        updateGraph(); // Run immediately on load
-        setInterval(updateGraph, 1000); // Update every second
-    </script>
+        // --- Task Logic ---
+        function renderTasks() {
+            els.taskList.innerHTML = '';
+            let completed = 0;
+            
+            state.tasks.forEach((task, index) => {
+                if (task.completed) completed++;
+                
+                const li = document.createElement('li');
+                li.className = `task-item ${task.completed ? 'completed' : ''}`;
+                li.innerHTML = `
+                    <div class="checkbox" onclick="toggleTask(${index})"></div>
+                    <span class="task-text">${escapeHtml(task.text)}</span>
+                    <button class="delete-btn" onclick="deleteTask(${index})">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
+                `;
+                els.taskList.appendChild(li);
+            });
 
+            els.taskCount.textContent = `${completed}/${state.tasks.length}`;
+            saveState();
+        }
+
+        function addTask() {
+            const text = els.taskInput.value.trim();
+            if (!text) return;
+            
+            state.tasks.push({ text, completed: false });
+            els.taskInput.value = '';
+            renderTasks();
+        }
+
+        window.toggleTask = (index) => {
+            state.tasks[index].completed = !state.tasks[index].completed;
+            renderTasks();
+        };
+
+        window.deleteTask = (index) => {
+            const li = els.taskList.children[index];
+            li.style.animation = "slideOut 0.3s forwards";
+            setTimeout(() => {
+                state.tasks.splice(index, 1);
+                renderTasks();
+            }, 300);
+        };
+
+        // --- Settings Logic ---
+        function initSettings() {
+            // Populate selects
+            for (let i = 0; i < 24; i++) {
+                const optStart = new Option(`${String(i).padStart(2,'0')}:00`, i);
+                const optEnd = new Option(`${String(i).padStart(2,'0')}:00`, i);
+                els.startInput.add(optStart);
+                els.endInput.add(optEnd);
+            }
+            
+            // Set current values
+            els.startInput.value = state.startHour;
+            els.endInput.value = state.endHour;
+            updateRangeDisplay();
+        }
+
+        function updateRangeDisplay() {
+            const format = h => `${String(h).padStart(2,'0')}:00`;
+            els.range.textContent = `${format(state.startHour)} - ${format(state.endHour)}`;
+        }
+
+        function saveState() {
+            localStorage.setItem('startHour', state.startHour);
+            localStorage.setItem('endHour', state.endHour);
+            localStorage.setItem('tasks', JSON.stringify(state.tasks));
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('openSettings').onclick = () => els.modal.classList.add('active');
+        document.getElementById('closeSettings').onclick = () => els.modal.classList.remove('active');
+        
+        document.getElementById('saveSettings').onclick = () => {
+            const start = parseInt(els.startInput.value);
+            const end = parseInt(els.endInput.value);
+            
+            if (start >= end) {
+                alert("End time must be after start time!");
+                return;
+            }
+            
+            state.startHour = start;
+            state.endHour = end;
+            saveState();
+            updateRangeDisplay();
+            updateProgress();
+            els.modal.classList.remove('active');
+        };
+
+        document.getElementById('addTaskBtn').onclick = addTask;
+        els.taskInput.onkeypress = (e) => {
+            if (e.key === 'Enter') addTask();
+        };
+
+        // --- Init ---
+        initSettings();
+        renderTasks();
+        updateProgress();
+        setInterval(updateProgress, 1000);
+
+        // Click outside modal to close
+        els.modal.addEventListener('click', (e) => {
+            if (e.target === els.modal) els.modal.classList.remove('active');
+        });
+
+    </script>
 </body>
 </html>
