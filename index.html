@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
-            background-image: 
+            background-image:
                 radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 20%),
                 radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 20%);
             color: var(--text-main);
@@ -32,7 +33,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-y: auto; /* Allow scrolling for tasks if needed */
+            overflow-y: auto;
+            /* Allow scrolling for tasks if needed */
         }
 
         /* --- Main Layout --- */
@@ -58,7 +60,7 @@
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .glass-card:hover {
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
             border-color: rgba(255, 255, 255, 0.2);
@@ -128,7 +130,8 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -60%); /* Adjusted slightly up */
+            transform: translate(-50%, -60%);
+            /* Adjusted slightly up */
             text-align: center;
         }
 
@@ -154,10 +157,10 @@
             margin-top: -10px;
             font-size: 1.1rem;
             color: var(--text-main);
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             padding: 8px 16px;
             border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         /* --- Task List --- */
@@ -203,7 +206,7 @@
         .add-btn:hover {
             opacity: 0.9;
         }
-        
+
         .add-btn:active {
             transform: scale(0.95);
         }
@@ -231,22 +234,32 @@
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         @keyframes slideOut {
-            to { opacity: 0; transform: translateX(20px); }
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
         }
 
         .task-item:hover {
             background: rgba(255, 255, 255, 0.06);
         }
-        
+
         .task-item.completed {
             opacity: 0.6;
         }
-        
+
         .task-item.completed .task-text {
             text-decoration: line-through;
             color: var(--text-muted);
@@ -262,7 +275,7 @@
             transition: all 0.2s;
             flex-shrink: 0;
         }
-        
+
         .checkbox:hover {
             border-color: var(--primary);
         }
@@ -374,7 +387,7 @@
             font-family: inherit;
             box-sizing: border-box;
         }
-        
+
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
@@ -397,10 +410,12 @@
         }
 
         /* Util helpers */
-        .hidden { display: none; }
-
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="app-container">
@@ -409,7 +424,13 @@
             <div class="header">
                 <h1>Day Progress</h1>
                 <button class="settings-btn" id="openSettings" title="Settings">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
                 </button>
             </div>
 
@@ -424,7 +445,7 @@
                     <circle class="progress-ring-circle progress-bg" cx="110" cy="110" r="90" />
                     <circle class="progress-ring-circle progress-value" cx="110" cy="110" r="90" />
                 </svg>
-                
+
                 <div class="progress-info">
                     <span class="percent-text" id="percentDisplay">0%</span>
                     <span class="status-text" id="statusDisplay">Remaining</span>
@@ -445,11 +466,15 @@
                 <h1>Focus Tasks</h1>
                 <span style="font-size: 0.8rem; color: var(--text-muted);" id="taskCount">0/0</span>
             </div>
-            
+
             <div class="task-input-group">
                 <input type="text" class="task-input" id="taskInput" placeholder="What needs to be done?">
                 <button class="add-btn" id="addTaskBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
                 </button>
             </div>
 
@@ -465,7 +490,10 @@
             <div class="modal-header">
                 <h2>Settings</h2>
                 <button class="settings-btn" id="closeSettings">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
             <div class="form-group">
@@ -477,7 +505,7 @@
             <div class="form-group">
                 <label for="endHour">End Time (Hour)</label>
                 <select id="endHour" class="form-control">
-                     <!-- 0-23 generated by JS -->
+                    <!-- 0-23 generated by JS -->
                 </select>
             </div>
             <button class="save-btn" id="saveSettings">Save Changes</button>
@@ -510,56 +538,119 @@
         // --- Progress Logic ---
         const radius = els.circle.r.baseVal.value;
         const circumference = radius * 2 * Math.PI;
-        
+
         els.circle.style.strokeDasharray = `${circumference} ${circumference}`;
         els.circle.style.strokeDashoffset = circumference;
 
         function updateProgress() {
             const now = new Date();
-            const currentMs = now.getHours() * 3600000 + now.getMinutes() * 60000 + now.getSeconds() * 1000;
-            const startMs = state.startHour * 3600000;
-            const endMs = state.endHour * 3600000;
-            const totalMs = endMs - startMs;
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
+            const currentSec = now.getSeconds();
+
+            // Convert everything to seconds for easier calculation
+            const currentTotalSeconds = (currentHour * 3600) + (currentMin * 60) + currentSec;
+            const startTotalSeconds = state.startHour * 3600;
+            const endTotalSeconds = state.endHour * 3600;
+
+            let totalDurationSeconds = 0;
+            let elapsedSeconds = 0;
+            let isOvernight = state.startHour > state.endHour;
+            let isActive = false;
+
+            if (isOvernight) {
+                // Overnight: e.g. 22:00 (Start) to 06:00 (End)
+                // Total duration = (24 - Start) + End
+                totalDurationSeconds = ((24 * 3600) - startTotalSeconds) + endTotalSeconds;
+
+                if (currentTotalSeconds >= startTotalSeconds) {
+                    // We are in the pre-midnight portion (e.g. 23:00)
+                    elapsedSeconds = currentTotalSeconds - startTotalSeconds;
+                    isActive = true;
+                } else if (currentTotalSeconds < endTotalSeconds) {
+                    // We are in the post-midnight portion (e.g. 04:00)
+                    elapsedSeconds = ((24 * 3600) - startTotalSeconds) + currentTotalSeconds;
+                    isActive = true;
+                } else {
+                    // Outside of working hours (e.g. 10:00)
+                    isActive = false;
+                }
+            } else {
+                // Standard Day: e.g. 09:00 (Start) to 18:00 (End)
+                totalDurationSeconds = endTotalSeconds - startTotalSeconds;
+
+                if (currentTotalSeconds >= startTotalSeconds && currentTotalSeconds < endTotalSeconds) {
+                    elapsedSeconds = currentTotalSeconds - startTotalSeconds;
+                    isActive = true;
+                } else if (currentTotalSeconds >= endTotalSeconds) {
+                    // After work
+                    elapsedSeconds = totalDurationSeconds;
+                    isActive = false;
+                } else {
+                    // Before work
+                    elapsedSeconds = 0;
+                    isActive = false;
+                }
+            }
 
             let percent = 0;
-            let remainingMs = 0;
+            let remainingSeconds = 0;
+            let statusText = "Resting"; // Default when inactive
 
-            if (currentMs < startMs) {
-                percent = 0;
-                remainingMs = endMs - startMs; // Or maybe show full time?
-                els.status.textContent = "Not Started";
-            } else if (currentMs > endMs) {
-                percent = 100;
-                remainingMs = 0;
-                els.status.textContent = "Completed";
+            if (isActive) {
+                percent = (elapsedSeconds / totalDurationSeconds) * 100;
+                remainingSeconds = totalDurationSeconds - elapsedSeconds;
+                statusText = "Remaining";
             } else {
-                const elapsed = currentMs - startMs;
-                percent = (elapsed / totalMs) * 100;
-                remainingMs = endMs - currentMs;
-                els.status.textContent = "Remaining";
+                // Determine if we are "Completed" or "Not Started" based on relative time
+                if (percent >= 100 || (elapsedSeconds >= totalDurationSeconds && totalDurationSeconds > 0)) {
+                    percent = 100;
+                    remainingSeconds = 0;
+                    statusText = "Completed";
+                } else if (elapsedSeconds === 0) {
+                    percent = 0;
+                    remainingSeconds = totalDurationSeconds;
+                    statusText = "Not Started";
+                }
+
+                if (isOvernight && !isActive) {
+                    percent = 0;
+                    remainingSeconds = 0;
+                    statusText = "Resting";
+                }
             }
+
+            // Clamp percent
+            if (percent < 0) percent = 0;
+            if (percent > 100) percent = 100;
 
             // Update UI
             const offset = circumference - (percent / 100) * circumference;
             els.circle.style.strokeDashoffset = offset;
             els.percent.textContent = Math.round(percent) + '%';
-            
+            els.status.textContent = statusText;
+
             // Format Time Remaining
-            const h = Math.floor(remainingMs / 3600000);
-            const m = Math.floor((remainingMs % 3600000) / 60000);
-            const s = Math.floor((remainingMs % 60000) / 1000);
-            els.timeLeft.textContent = 
-                `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            const h = Math.floor(remainingSeconds / 3600);
+            const m = Math.floor((remainingSeconds % 3600) / 60);
+            const s = remainingSeconds % 60;
+
+            if (statusText === "Resting" || (statusText === "Completed" && remainingSeconds === 0)) {
+                els.timeLeft.textContent = "--:--:--";
+            } else {
+                els.timeLeft.textContent =
+                    `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }
         }
 
         // --- Task Logic ---
         function renderTasks() {
             els.taskList.innerHTML = '';
             let completed = 0;
-            
+
             state.tasks.forEach((task, index) => {
                 if (task.completed) completed++;
-                
+
                 const li = document.createElement('li');
                 li.className = `task-item ${task.completed ? 'completed' : ''}`;
                 li.innerHTML = `
@@ -579,7 +670,7 @@
         function addTask() {
             const text = els.taskInput.value.trim();
             if (!text) return;
-            
+
             state.tasks.push({ text, completed: false });
             els.taskInput.value = '';
             renderTasks();
@@ -603,12 +694,12 @@
         function initSettings() {
             // Populate selects
             for (let i = 0; i < 24; i++) {
-                const optStart = new Option(`${String(i).padStart(2,'0')}:00`, i);
-                const optEnd = new Option(`${String(i).padStart(2,'0')}:00`, i);
+                const optStart = new Option(`${String(i).padStart(2, '0')}:00`, i);
+                const optEnd = new Option(`${String(i).padStart(2, '0')}:00`, i);
                 els.startInput.add(optStart);
                 els.endInput.add(optEnd);
             }
-            
+
             // Set current values
             els.startInput.value = state.startHour;
             els.endInput.value = state.endHour;
@@ -616,7 +707,7 @@
         }
 
         function updateRangeDisplay() {
-            const format = h => `${String(h).padStart(2,'0')}:00`;
+            const format = h => `${String(h).padStart(2, '0')}:00`;
             els.range.textContent = `${format(state.startHour)} - ${format(state.endHour)}`;
         }
 
@@ -635,16 +726,13 @@
         // --- Event Listeners ---
         document.getElementById('openSettings').onclick = () => els.modal.classList.add('active');
         document.getElementById('closeSettings').onclick = () => els.modal.classList.remove('active');
-        
+
         document.getElementById('saveSettings').onclick = () => {
             const start = parseInt(els.startInput.value);
             const end = parseInt(els.endInput.value);
-            
-            if (start >= end) {
-                alert("End time must be after start time!");
-                return;
-            }
-            
+
+            // Removed validation to allow overnight shifts
+
             state.startHour = start;
             state.endHour = end;
             saveState();
@@ -671,4 +759,5 @@
 
     </script>
 </body>
+
 </html>
