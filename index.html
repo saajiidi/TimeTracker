@@ -146,6 +146,13 @@
             display: block;
         }
 
+        .percent-text.small {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #94a3b8, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
         .status-text {
             font-size: 0.85rem;
             color: var(--text-muted);
@@ -448,7 +455,11 @@
 
                 <div class="progress-info">
                     <span class="percent-text" id="percentDisplay">0%</span>
-                    <span class="status-text" id="statusDisplay">Remaining</span>
+                    <span class="status-text" id="statusDisplay">Progress</span>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
+                        <span class="percent-text small" id="remainingPercentDisplay">100%</span>
+                        <span class="status-text">Remaining</span>
+                    </div>
                 </div>
             </div>
 
@@ -523,6 +534,7 @@
         // --- DOM Elements ---
         const els = {
             percent: document.getElementById('percentDisplay'),
+            remainingPercent: document.getElementById('remainingPercentDisplay'),
             status: document.getElementById('statusDisplay'),
             timeLeft: document.getElementById('timeLeftDisplay'),
             range: document.getElementById('rangeDisplay'),
@@ -600,7 +612,7 @@
             if (isActive) {
                 percent = (elapsedSeconds / totalDurationSeconds) * 100;
                 remainingSeconds = totalDurationSeconds - elapsedSeconds;
-                statusText = "Remaining";
+                statusText = "Progress";
             } else {
                 // Determine if we are "Completed" or "Not Started" based on relative time
                 if (percent >= 100 || (elapsedSeconds >= totalDurationSeconds && totalDurationSeconds > 0)) {
@@ -628,6 +640,7 @@
             const offset = circumference - (percent / 100) * circumference;
             els.circle.style.strokeDashoffset = offset;
             els.percent.textContent = Math.round(percent) + '%';
+            if (els.remainingPercent) els.remainingPercent.textContent = (100 - Math.round(percent)) + '%';
             els.status.textContent = statusText;
 
             // Format Time Remaining
